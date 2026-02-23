@@ -1,0 +1,376 @@
+<%- include('partials/header', { title: 'Événements' }) %>
+
+    <!-- HEADER PAGE -->
+    <header class="bg-primary text-white pt-24 pb-12 md:pt-32 md:pb-20 text-center relative">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 tracking-tight">Agenda</h1>
+            <p class="text-lg md:text-xl text-blue-200">Ne manquez rien de ce qui se passe à l'Église.</p>
+        </div>
+    </header>
+
+    <!-- CALENDRIER -->
+    <section class="py-12 md:py-16 bg-slate-50 min-h-screen">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12 gap-4">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Prochainement</h2>
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <a href="/events/new" class="bg-primary hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-full flex items-center gap-2 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <i class="ph ph-plus-circle text-lg"></i>
+                            <span class="hidden sm:inline">Ajouter</span>
+                        </a>
+                    <% } %>
+                </div>
+                <!-- Filtres (Visual only for now) -->
+                <div class="flex bg-white rounded-full p-1 shadow-sm border border-slate-200">
+                    <a href="?view=list" class="px-5 py-2 rounded-full font-medium text-sm transition <%= (typeof currentView === 'undefined' || currentView === 'list') ? 'bg-primary text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50' %>">Liste</a>
+                    <a href="?view=month" class="px-5 py-2 rounded-full font-medium text-sm transition <%= (typeof currentView !== 'undefined' && currentView === 'month') ? 'bg-primary text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50' %>">Mois</a>
+                </div>
+            </div>
+
+            <% if (typeof currentView === 'undefined' || currentView === 'list') { %>
+            <div class="space-y-6">
+                <% if (typeof events !== 'undefined' && events && events.length > 0) { %>
+                    <% 
+                    const categoryIcons = { 'Conférence': 'ph-microphone-stage', 'Musique': 'ph-music-note', 'Communauté': 'ph-users', 'Culte': 'ph-church' }; 
+                    const categoryColors = { 'Conférence': 'text-blue-600', 'Musique': 'text-purple-600', 'Communauté': 'text-green-600', 'Culte': 'text-accent' };
+                    %>
+                    
+                    <% events.forEach(function(event) { 
+                        const eventDate = new Date(event.date_event);
+                        const now = new Date();
+                        
+                        // Normaliser les dates pour comparer seulement les jours (optionnel, ici on compare avec l'heure)
+                        const isToday = eventDate.toDateString() === now.toDateString();
+                        const isPast = eventDate < now && !isToday;
+
+                        let statusBadge = "";
+                        let opacityClass = "";
+
+                        if (isPast) {
+                            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200">Terminé</span>';
+                            opacityClass = "opacity-60 grayscale hover:grayscale-0 hover:opacity-100";
+                        } else if (isToday) {
+                            statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700 border border-green-200 animate-pulse">Aujourd\'hui</span>';
+                        } else {
+                            // Calcul du nombre de jours restants
+                            const diffTime = Math.abs(eventDate - now);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                            if (diffDays <= 7) {
+                                statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-100">Dans ${diffDays} jours</span>`;
+                            }
+                        }
+                    %>
+                    <div class="relative flex flex-col md:flex-row bg-white hover:bg-slate-50 border border-slate-200 rounded-xl overflow-hidden transition shadow-sm hover:shadow-md group <%= opacityClass %>">
+                        
+                        <!-- Main Link -->
+                        <a href="/events/<%= event.id %>" class="absolute inset-0 z-0 text-transparent">Voir l'événement</a>
+
+                        <!-- Admin Actions -->
+                        <% if (typeof user !== 'undefined' && user) { %>
+                            <div class="absolute top-2 right-2 z-30 flex gap-2">
+                                <a href="/events/edit/<%= event.id %>" class="bg-white/90 backdrop-blur-md hover:bg-blue-50 text-blue-600 p-2.5 rounded-full shadow-lg transition-transform hover:scale-110" title="Modifier">
+                                    <i class="ph-bold ph-pencil-simple"></i>
+                                </a>
+                                <button type="button" onclick="openDeleteModal('<%= event.id %>')" class="bg-white/90 backdrop-blur-md hover:bg-red-50 text-red-600 p-2.5 rounded-full shadow-lg transition-transform hover:scale-110" title="Supprimer">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                                <form id="delete-form-<%= event.id %>" action="/events/delete/<%= event.id %>" method="POST" class="hidden"></form>
+                            </div>
+                        <% } %>
+                        
+                        <!-- Image Container -->
+                        <div class="md:w-64 h-48 md:h-auto overflow-hidden relative flex-shrink-0">
+                             <% if (event.image_url) { %>
+                                <img src="<%= event.image_url %>" alt="<%= event.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                             <% } else { %>
+                                <div class="w-full h-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition">
+                                    <i class="ph-fill <%= categoryIcons[event.category] || 'ph-calendar' %> text-white text-4xl"></i>
+                                </div>
+                             <% } %>
+                             <div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 text-center text-primary shadow-sm">
+                                <span class="block text-xs font-bold uppercase"><%= eventDate.toLocaleDateString('fr-FR', {weekday: 'short'}) %></span>
+                                <span class="block text-xl font-bold leading-none"><%= eventDate.getDate() %></span>
+                             </div>
+                        </div>
+                        <!-- Content -->
+                        <div class="p-6 md:p-8 flex-grow flex flex-col justify-center">
+                            <div class="flex items-center gap-2 text-xs font-bold tracking-wider uppercase mb-2">
+                                <span class="bg-current/10 px-2 py-1 rounded-full flex items-center gap-1 <%= categoryColors[event.category] || 'text-slate-600' %>">
+                                    <i class="ph-fill <%= categoryIcons[event.category] || 'ph-calendar' %>"></i> <%= event.category || 'Événement' %>
+                                </span>
+                                <%- statusBadge %>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 group-hover:text-primary transition-colors mb-2"><%= event.title %></h3>
+                            <p class="text-slate-600 mb-4 line-clamp-2"><%= event.description %></p>
+                            
+                            <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500 font-medium border-t border-slate-100 pt-4 mt-auto">
+                                 <span class="flex items-center gap-1.5"><i class="ph ph-clock text-lg text-primary/70"></i> <%= eventDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}) %></span>
+                                 <span class="flex items-center gap-1.5"><i class="ph ph-map-pin text-lg text-primary/70"></i> <%= event.location %></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Arrow -->
+                        <div class="hidden md:flex flex-col justify-center px-6 border-l border-slate-100 bg-slate-50 text-slate-300 group-hover:text-primary group-hover:bg-primary/5 transition duration-300">
+                            <i class="ph-bold ph-caret-right text-3xl transform group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="text-center text-slate-500 py-12">Aucun événement à venir pour le moment.</p>
+                <% } %>
+            </div>
+            <% } else { %>
+                <!-- CALENDRIER -->
+                <div id="calendar-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    
+                    <!-- Calendar Header -->
+                    <div class="flex items-center justify-between mb-8">
+                        <button id="prevMonth" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 transition border border-transparent hover:border-slate-200">
+                            <i class="ph-bold ph-caret-left text-xl"></i>
+                        </button>
+                        <h3 id="currentMonthDisplay" class="text-2xl font-bold text-slate-800 capitalize tracking-tight flex items-center gap-2">
+                            <i class="ph-fill ph-calendar-blank text-primary/20"></i> <span id="monthName"></span> <span id="yearNum" class="text-slate-400 font-normal"></span>
+                        </h3>
+                        <button id="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 transition border border-transparent hover:border-slate-200">
+                            <i class="ph-bold ph-caret-right text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Week Days Header -->
+                    <div class="grid grid-cols-7 mb-4 text-center">
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Lun</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Mar</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Mer</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Jeu</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest py-2">Ven</div>
+                        <div class="text-xs font-bold text-rose-400 uppercase tracking-widest py-2">Sam</div>
+                        <div class="text-xs font-bold text-rose-400 uppercase tracking-widest py-2">Dim</div>
+                    </div>
+
+                    <!-- Calendar Grid -->
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-2 md:gap-4 auto-rows-fr">
+                        <!-- JS generated content -->
+                    </div>
+                </div>
+
+                <!-- Event Details Modal (Simple) -->
+                <div id="eventDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+                    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-100">
+                        <div class="relative h-32 bg-primary">
+                            <button onclick="closeEventModal()" class="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition">
+                                <i class="ph-bold ph-x"></i>
+                            </button>
+                            <div class="absolute -bottom-6 left-6 w-16 h-16 bg-white rounded-xl shadow-lg flex flex-col items-center justify-center text-primary font-bold border-4 border-white">
+                                <span class="text-xs uppercase" id="modalEventMonth">XXX</span>
+                                <span class="text-2xl leading-none" id="modalEventDay">00</span>
+                            </div>
+                        </div>
+                        <div class="pt-10 pb-8 px-6">
+                            <div class="mb-4">
+                                <span id="modalEventCategory" class="text-xs font-bold uppercase tracking-wider text-primary px-2 py-1 bg-primary/10 rounded-full">Catégorie</span>
+                            </div>
+                            <h3 id="modalEventTitle" class="text-2xl font-bold text-slate-800 mb-2">Titre de l'événement</h3>
+                            <div class="flex flex-col gap-2 text-sm text-slate-500 mb-6">
+                                <span class="flex items-center gap-2"><i class="ph-bold ph-clock"></i> <span id="modalEventTime">00:00</span></span>
+                                <span class="flex items-center gap-2"><i class="ph-bold ph-map-pin"></i> <span id="modalEventLocation">Lieu</span></span>
+                            </div>
+                            <p id="modalEventDesc" class="text-slate-600 mb-8 leading-relaxed">Description...</p>
+                            <a id="modalEventLink" href="#" class="block w-full bg-primary text-white text-center py-3 rounded-xl font-bold hover:bg-slate-800 transition shadow-lg shadow-blue-900/20">
+                                Voir les détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    const allEvents = <%- JSON.stringify(events || []) %>;
+                    
+                    let currentDate = new Date();
+                    let displayedMonth = currentDate.getMonth();
+                    let displayedYear = currentDate.getFullYear();
+
+                    function initCalendar() {
+                        renderCalendar(displayedMonth, displayedYear);
+
+                        document.getElementById('prevMonth').addEventListener('click', () => {
+                            displayedMonth--;
+                            if (displayedMonth < 0) {
+                                displayedMonth = 11;
+                                displayedYear--;
+                            }
+                            renderCalendar(displayedMonth, displayedYear);
+                        });
+
+                        document.getElementById('nextMonth').addEventListener('click', () => {
+                            displayedMonth++;
+                            if (displayedMonth > 11) {
+                                displayedMonth = 0;
+                                displayedYear++;
+                            }
+                            renderCalendar(displayedMonth, displayedYear);
+                        });
+                    }
+
+                    function renderCalendar(month, year) {
+                        const grid = document.getElementById('calendar-grid');
+                        const monthNameEl = document.getElementById('monthName');
+                        const yearNumEl = document.getElementById('yearNum');
+                        
+                        // Set Header
+                        const date = new Date(year, month);
+                        monthNameEl.textContent = date.toLocaleDateString('fr-FR', { month: 'long' });
+                        yearNumEl.textContent = year;
+
+                        grid.innerHTML = '';
+
+                        // Calendar Logic
+                        const firstDay = new Date(year, month, 1).getDay(); // 0 = Dim, 1 = Lun
+                        // Adjust for Mon-Sun (Mon=0, Sun=6)
+                        const startDay = firstDay === 0 ? 6 : firstDay - 1;
+                        const daysInMonth = new Date(year, month + 1, 0).getDate();
+                        const prevMonthDays = new Date(year, month, 0).getDate();
+
+                        // Empty/Prev Month Cells
+                        for (let i = 0; i < startDay; i++) {
+                            const dayNum = prevMonthDays - startDay + i + 1;
+                            const cell = createCell(dayNum, true);
+                            grid.appendChild(cell);
+                        }
+
+                        // Current Month Cells
+                        for (let i = 1; i <= daysInMonth; i++) {
+                            const customDateStr = new Date(year, month, i).toDateString();
+                            const dayEvents = allEvents.filter(e => {
+                                const eDate = new Date(e.date_event);
+                                return eDate.getDate() === i && eDate.getMonth() === month && eDate.getFullYear() === year;
+                            });
+
+                            const isToday = new Date().toDateString() === customDateStr;
+                            const cell = createCell(i, false, isToday, dayEvents);
+                            grid.appendChild(cell);
+                        }
+                    }
+
+                    function createCell(dayNum, isOtherMonth, isToday = false, dayEvents = []) {
+                        const div = document.createElement('div');
+                        div.className = `min-h-[100px] md:min-h-[120px] rounded-xl p-2 border transition relative flex flex-col gap-1 ${
+                            isOtherMonth ? 'bg-slate-50 border-slate-100 text-slate-300' : 
+                            isToday ? 'bg-blue-50 border-blue-200 shadow-inner' : 'bg-white border-slate-100 hover:border-blue-200 hover:shadow-sm'
+                        }`;
+                        
+                        const dateSpan = document.createElement('span');
+                        dateSpan.className = `text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
+                            isToday ? 'bg-primary text-white shadow-sm' : 'text-slate-500'
+                        }`;
+                        dateSpan.textContent = dayNum;
+                        div.appendChild(dateSpan);
+
+                        if (dayEvents.length > 0) {
+                            dayEvents.forEach(evt => {
+                                const evtLink = document.createElement('a');
+                                evtLink.href = `/events/${evt.id}`;
+                                evtLink.className = "w-full text-left text-[10px] md:text-xs px-2 py-1 rounded-md bg-white border border-slate-100 shadow-sm hover:bg-blue-500 hover:text-white hover:border-blue-600 transition truncate font-medium flex items-center gap-1 group block";
+                                evtLink.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-400 group-hover:bg-white flex-shrink-0"></span> ${evt.title}`;
+                                evtLink.onclick = (e) => {
+                                    e.stopPropagation(); // Just in case, though it's an anchor now
+                                };
+                                div.appendChild(evtLink);
+                            });
+                        }
+
+                        return div;
+                    }
+
+                    // Plus besoin de la modale si on va directement sur la page détail
+                    
+                    // Init if view is month
+                    if (document.getElementById('calendar-grid')) {
+                        initCalendar();
+                    }
+                </script>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Modal de Confirmation de Suppression -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Overlay -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modalOverlay"></div>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <!-- Modal Panel -->
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg scale-95 opacity-0" id="modalPanel">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <i class="ph-bold ph-warning text-red-600 text-xl"></i>
+                            </div>
+                            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <h3 class="text-xl font-bold leading-6 text-slate-800" id="modal-title">Supprimer l'événement ?</h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-slate-500">
+                                        Cette action est irréversible. Êtes-vous certain de vouloir retirer cet événement de l'agenda ?
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-slate-100">
+                        <button type="button" id="confirmDeleteBtn" class="inline-flex w-full justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition">
+                            Oui, supprimer
+                        </button>
+                        <button type="button" onclick="closeDeleteModal()" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du Modal
+        const modal = document.getElementById('deleteModal');
+        const overlay = document.getElementById('modalOverlay');
+        const panel = document.getElementById('modalPanel');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        let currentEventId = null;
+
+        function openDeleteModal(eventId) {
+            currentEventId = eventId;
+            modal.classList.remove('hidden');
+            // Animation d'entrée
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                panel.classList.remove('scale-95', 'opacity-0');
+                panel.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeDeleteModal() {
+            // Animation de sortie
+            overlay.classList.add('opacity-0');
+            panel.classList.remove('scale-100', 'opacity-100');
+            panel.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentEventId = null;
+            }, 300); // Correspond à la durée de transition CSS par défaut
+        }
+
+        confirmBtn.addEventListener('click', () => {
+            if (currentEventId) {
+                const form = document.getElementById('delete-form-' + currentEventId);
+                if (form) form.submit();
+            }
+        });
+
+        // Fermer en cliquant sur l'overlay
+        overlay.addEventListener('click', closeDeleteModal);
+    </script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,111 @@
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-primary text-slate-300 pt-16 pb-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Colonne Info -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <img src="/images/logo.avif" alt="Logo Église Évangélique Du Berger" class="h-10 w-auto object-contain">
+                        <span class="font-bold text-lg text-white">EGLISE EVANGELIQUE DU BERGER</span>
+                    </div>
+                    <p class="text-sm leading-relaxed mb-6">
+                        Une église évangélique contemporaine au cœur de Québec, passionnée par Dieu et les gens.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-white transition text-white">
+                            <i class="ph-fill ph-facebook-logo text-xl"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-white transition text-white">
+                            <i class="ph-fill ph-instagram-logo text-xl"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-white transition text-white">
+                            <i class="ph-fill ph-youtube-logo text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Liens Rapides -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Explorer</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/about#vision" class="hover:text-accent transition">Notre Vision</a></li>
+                        <li><a href="/about#team" class="hover:text-accent transition">L'équipe pastorale</a></li>
+                        <li><a href="/about#values" class="hover:text-accent transition">Confession de foi</a></li>
+                        <li><a href="/media" class="hover:text-accent transition">Prédications récentes</a></li>
+                    </ul>
+                </div>
+
+                <!-- Ministères -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Ministères</h4>
+                    <ul class="space-y-2 text-sm">
+                        <% if (typeof footerMinistries !== 'undefined' && footerMinistries.length > 0) { %>
+                            <% footerMinistries.slice(0, 3).forEach(function(ministry) { %>
+                                <li><a href="/ministries#ministry-<%= ministry.id %>" class="hover:text-accent transition"><%= ministry.name %></a></li>
+                            <% }); %>
+                            
+                            <% if (footerMinistries.length > 3) { %>
+                                <li><a href="/ministries" class="text-accent hover:text-white transition font-semibold flex items-center gap-1">Voir plus <i class="ph-bold ph-arrow-right"></i></a></li>
+                            <% } %>
+                        <% } else { %>
+                            <li><a href="/ministries" class="hover:text-accent transition">Découvrir nos ministères</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-bold mb-4">Contact</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-map-pin text-accent mt-0.5"></i>
+                            <span>2620 Rue Darveau<br>Québec (QC) G1P 3V5</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-envelope text-accent"></i>
+                            <a href="mailto:info@egliseduberger.org" class="hover:text-white">info@egliseduberger.org</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-phone text-accent"></i>
+                            <a href="tel:418-265-1718" class="hover:text-white">(418) 265-1718</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+                <p>&copy; 2026 Eglise Evangelique Du Berger - Québec. Tous droits réservés.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-slate-300">Confidentialité</a>
+                    <a href="#" class="hover:text-slate-300">Mentions Légales</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script simple pour le Menu Mobile -->
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        // Only add event listener if elements exist
+        if (btn && menu) {
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+                
+                // Toggle Icon
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    if (menu.classList.contains('hidden')) {
+                         icon.classList.remove('ph-x');
+                         icon.classList.add('ph-list');
+                    } else {
+                         icon.classList.remove('ph-list');
+                         icon.classList.add('ph-x');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

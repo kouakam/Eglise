@@ -1,0 +1,446 @@
+<%- include('partials/header', { title: 'Médiathèque' }) %>
+
+    <!-- HEADER PAGE -->
+    <header class="bg-primary/95 pt-32 pb-20 text-center text-white relative">
+        <div class="absolute inset-0 z-[-1] bg-slate-900 opacity-90"></div>
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Médiathèque</h1>
+            <p class="text-xl text-slate-300 mb-8">Revoir les cultes, enseignements et moments forts.</p>
+            
+            <% if (typeof user !== 'undefined' && user) { %>
+                <a href="/sermons/new" class="inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-full font-bold shadow-lg hover:bg-slate-100 transition transform hover:-translate-y-1">
+                    <i class="ph-bold ph-plus-circle text-xl"></i> Ajouter un sermon
+                </a>
+            <% } %>
+        </div>
+    </header>
+
+    <!-- DERNIÈRE VIDÉO (FEATURED) -->
+    <section class="py-12 bg-white border-b border-slate-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <!-- Custom Video Player Container -->
+                    <div class="relative bg-black rounded-xl overflow-hidden shadow-2xl w-full aspect-video group cursor-pointer" id="video-player-wrapper" onclick="playVideo()">
+                        
+                        <!-- Thumbnail Image (Cover) -->
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                             alt="Vidéo Culte" 
+                             class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700"
+                             id="video-thumbnail">
+                        
+                        <!-- Overlay Gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent pointer-events-none" id="video-overlay"></div>
+
+                        <!-- Custom Play Button -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none" id="play-button">
+                            <div class="relative flex items-center justify-center">
+                                <!-- Pulse Effect -->
+                                <div class="absolute w-24 h-24 bg-white/20 rounded-full animate-ping"></div>
+                                <!-- Button Circle -->
+                                <div class="relative w-20 h-20 bg-accent hover:bg-white text-white hover:text-accent rounded-full flex items-center justify-center transition duration-300 shadow-lg transform group-hover:scale-110">
+                                    <i class="ph-fill ph-play text-4xl ml-1"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Title Badge on Cover -->
+                        <div class="absolute bottom-6 left-6 pointer-events-none" id="video-info">
+                            <span class="inline-block px-3 py-1 bg-accent text-white text-xs font-bold rounded uppercase mb-2 shadow-sm">En direct</span>
+                            <h3 class="text-white text-xl md:text-2xl font-bold shadow-sm"><%= featuredSermon ? featuredSermon.title : "Culte du Dimanche" %></h3>
+                            <p class="text-slate-200 text-sm mt-1">Durée : <%= featuredSermon ? featuredSermon.duration : "1h 15min" %></p>
+                        </div>
+
+                        <!-- Actual Iframe (Hidden initially) -->
+                        <div id="youtube-frame" class="hidden h-full w-full"></div>
+
+                        <!-- Edit Controls for Featured (Desktop) -->
+                        <% if (typeof user !== 'undefined' && user && featuredSermon) { %>
+                            <div class="absolute top-4 right-4 z-20 flex gap-2" onclick="event.stopPropagation();">
+                                <a href="/sermons/edit/<%= featuredSermon.id %>" class="bg-white/90 backdrop-blur-md hover:bg-blue-50 text-blue-600 p-3 rounded-full shadow-lg transition-transform hover:scale-110" title="Modifier">
+                                    <i class="ph-bold ph-pencil-simple text-xl"></i>
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Script to handle Play Click -->
+                    <script>
+                        function playVideo() {
+                            const thumbnail = document.getElementById('video-thumbnail');
+                            const playBtn = document.getElementById('play-button');
+                            const overlay = document.getElementById('video-overlay');
+                            const info = document.getElementById('video-info');
+                            const frameContainer = document.getElementById('youtube-frame');
+
+                            // Hide cover elements
+                            if(thumbnail) thumbnail.style.display = 'none';
+                            if(playBtn) playBtn.style.display = 'none';
+                            if(overlay) overlay.style.display = 'none';
+                            if(info) info.style.display = 'none';
+
+                            // Show and load iframe
+                            if(frameContainer) {
+                                frameContainer.classList.remove('hidden');
+                                var videoUrl = "<%= featuredSermon && featuredSermon.video_url ? featuredSermon.video_url : 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>";
+                                if (videoUrl) {
+                                  frameContainer.innerHTML = '<iframe class="w-full h-full" src="' + videoUrl + '?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+                                }
+                            }
+                        }
+
+                        function loadVideo(url, title, description, preacher, date) {
+                            if (!url) return;
+
+                            // Update Info content
+                            const titleEl = document.querySelector('.lg\\:col-span-2 + div h2');
+                            const descEl = document.querySelector('.lg\\:col-span-2 + div p');
+                            const metaContainer = document.querySelector('.meta-container');
+
+                            if(titleEl) titleEl.innerText = title;
+                            // Basic HTML decoding for description if needed, or just text
+                            if(descEl) descEl.innerText = description;
+                            
+                            if (metaContainer) {
+                                metaContainer.innerHTML = `
+                                    <span class="flex items-center gap-1"><i class="ph-fill ph-user"></i> ${preacher}</span>
+                                    <span class="flex items-center gap-1"><i class="ph-fill ph-calendar"></i> ${date}</span>
+                                `;
+                            }
+
+                            // Update Player
+                            const frameContainer = document.getElementById('youtube-frame');
+                            const thumbnail = document.getElementById('video-thumbnail');
+                            const playBtn = document.getElementById('play-button');
+                            const overlay = document.getElementById('video-overlay');
+                            const info = document.getElementById('video-info');
+
+                            // Hide cover elements
+                            if(thumbnail) thumbnail.style.display = 'none';
+                            if(playBtn) playBtn.style.display = 'none';
+                            if(overlay) overlay.style.display = 'none';
+                            if(info) info.style.display = 'none';
+                            
+                            // Show and set iframe
+                            if(frameContainer) {
+                                frameContainer.classList.remove('hidden');
+                                frameContainer.innerHTML = `<iframe class="w-full h-full" src="${url}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                            }
+
+                            // Scroll to player
+                             document.getElementById('video-player-wrapper').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                            // Hide featured label
+                            const featuredLabel = document.getElementById('featured-label');
+                            if (featuredLabel) featuredLabel.style.display = 'none';
+                        }
+                    </script>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span id="featured-label" class="inline-block px-3 py-1 bg-accent/10 text-accent font-bold rounded-full text-sm mb-4 w-fit">Dernier Culte</span>
+                    <% if (featuredSermon) { %>
+                        <h2 class="text-3xl font-bold text-primary mb-4"><%= featuredSermon.title %></h2>
+                        <p class="text-slate-600 mb-6 leading-relaxed">
+                            <%= featuredSermon.description %>
+                        </p>
+                        <div class="flex items-center gap-4 text-sm text-slate-500 mb-6 meta-container">
+                            <span class="flex items-center gap-1"><i class="ph-fill ph-user"></i> <%= featuredSermon.preacher %></span>
+                            <span class="flex items-center gap-1"><i class="ph-fill ph-calendar"></i> <%= new Date(featuredSermon.date_preached).toLocaleDateString('fr-CA') %></span>
+                        </div>
+                    <% } else { %>
+                        <h2 class="text-3xl font-bold text-primary mb-4">Aucune prédication</h2>
+                        <p class="text-slate-600 mb-6 leading-relaxed">Revenez bientôt pour de nouveaux contenus.</p>
+                    <% } %>
+                    <div class="flex gap-4">
+                        <button class="bg-primary text-white px-6 py-2 rounded-lg font-medium hover:bg-slate-800 transition flex items-center gap-2">
+                            <i class="ph-fill ph-download-simple"></i> Audio MP3
+                        </button>
+                        <button class="border border-slate-300 px-6 py-2 rounded-lg font-medium hover:bg-slate-50 transition flex items-center gap-2">
+                            <i class="ph-fill ph-share-network"></i> Partager
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERIE VIDÉOS -->
+    <section class="py-16 bg-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Filtres -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <a href="/media" class="px-6 py-2 rounded-full font-medium shadow-sm transition <%= !currentCategory ? 'bg-primary text-white' : 'bg-white text-slate-600 hover:text-accent border border-slate-200' %>">Tout voir</a>
+                <a href="/media?category=Cultes" class="px-6 py-2 rounded-full font-medium transition <%= currentCategory === 'Cultes' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 hover:text-accent border border-slate-200 hover:border-accent' %>">Cultes</a>
+                <a href="/media?category=Enseignements" class="px-6 py-2 rounded-full font-medium transition <%= currentCategory === 'Enseignements' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 hover:text-accent border border-slate-200 hover:border-accent' %>">Enseignements</a>
+                <a href="/media?category=Événements" class="px-6 py-2 rounded-full font-medium transition <%= currentCategory === 'Événements' ? 'bg-primary text-white shadow-sm' : 'bg-white text-slate-600 hover:text-accent border border-slate-200 hover:border-accent' %>">Événements</a>
+            </div>
+
+            <!-- Grille -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% if (typeof recentSermons !== 'undefined' && recentSermons.length > 0) { %>
+                    <% recentSermons.forEach(function(sermon) { 
+                        // Générer une image de couverture aléatoire basée sur l'ID
+                        const images = [
+                            "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                            "https://images.unsplash.com/photo-1510590337019-5ef2d3977e2e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                            "https://images.unsplash.com/photo-1478147427282-58a87a120781?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                            "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        ];
+                        const randomImage = images[sermon.id % images.length];
+                    %>
+                <!-- Vidéo Item -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition relative">
+                    
+                    <!-- Actions Admin (Overlay) -->
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <div class="absolute top-2 right-2 z-30 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <a href="/sermons/edit/<%= sermon.id %>" class="bg-white/90 backdrop-blur-md hover:bg-blue-50 text-blue-600 p-2 rounded-full shadow-lg transition-transform hover:scale-110" title="Modifier">
+                                <i class="ph-bold ph-pencil-simple text-lg"></i>
+                            </a>
+                            <button type="button" onclick="openDeleteModal('<%= sermon.id %>')" class="bg-white/90 backdrop-blur-md hover:bg-red-50 text-red-600 p-2 rounded-full shadow-lg transition-transform hover:scale-110" title="Supprimer">
+                                <i class="ph-bold ph-trash text-lg"></i>
+                            </button>
+                            <form id="delete-form-<%= sermon.id %>" action="/sermons/delete/<%= sermon.id %>" method="POST" class="hidden"></form>
+                        </div>
+                    <% } %>
+
+                    <div class="relative h-48 overflow-hidden cursor-pointer" onclick="loadVideo('<%= sermon.video_url || '' %>')">
+                        <img src="<%= randomImage %>" alt="<%= sermon.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition flex items-center justify-center">
+                            <% if (sermon.video_url) { %>
+                            <button onclick="loadVideo('<%= sermon.video_url %>', '<%= sermon.title.replace(/'/g, "\\'") %>', '<%= sermon.description.replace(/'/g, "\\'") %>', '<%= sermon.preacher %>', '<%= new Date(sermon.date_preached).toLocaleDateString('fr-CA') %>')" class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-accent text-xl shadow-lg cursor-pointer hover:scale-110 transition z-10">
+                                <i class="ph-fill ph-play"></i>
+                            </button>
+                            <% } else { %>
+                            <span class="w-12 h-12 bg-white/50 rounded-full flex items-center justify-center text-slate-400 text-xl cursor-not-allowed">
+                                <i class="ph-fill ph-microphone-slash"></i>
+                            </span>
+                            <% } %>
+                        </div>
+                        <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded"><%= sermon.duration || '00:00' %></span>
+                    </div>
+                    <!-- Clickable body to also load video -->
+                    <div class="px-6 py-4 cursor-pointer" onclick="loadVideo('<%= sermon.video_url || '' %>', '<%= sermon.title.replace(/'/g, "\\'") %>', '<%= sermon.description.replace(/'/g, "\\'") %>', '<%= sermon.preacher %>', '<%= new Date(sermon.date_preached).toLocaleDateString('fr-CA') %>')">
+                        <div class="text-xs font-bold text-accent uppercase mb-2"><%= sermon.series || 'Enseignement' %></div>
+                        <h3 class="font-bold text-lg text-primary mb-2 line-clamp-2"><%= sermon.title %></h3>
+                        <p class="text-slate-500 text-sm mb-4 line-clamp-2"><%= sermon.description %></p>
+                        <div class="flex justify-between items-center text-xs text-slate-400">
+                            <span><%= new Date(sermon.date_preached).toLocaleDateString('fr-CA') %></span>
+                            <span><i class="ph-fill ph-user"></i> <%= sermon.preacher %></span>
+                        </div>
+                    </div>
+                </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="col-span-3 text-center text-slate-500">Aucune autre prédication disponible.</p>
+                <% } %>
+            </div>
+
+            <!-- Pagination -->
+            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+            <div class="flex justify-center mt-12">
+                <nav class="flex items-center gap-2">
+                    <!-- Previous Button -->
+                    <% if (currentPaginationPage > 1) { %>
+                        <a href="/media?page=<%= currentPaginationPage - 1 %>" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-white hover:text-accent transition"><i class="ph-bold ph-caret-left"></i></a>
+                    <% } else { %>
+                        <span class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 cursor-not-allowed"><i class="ph-bold ph-caret-left"></i></span>
+                    <% } %>
+
+                    <!-- Page Numbers -->
+                    <% 
+                    let startPage = Math.max(1, currentPaginationPage - 2);
+                    let endPage = Math.min(totalPages, startPage + 4);
+                    
+                    if (endPage - startPage < 4) {
+                        startPage = Math.max(1, endPage - 4);
+                    }
+                    %>
+
+                    <% if (startPage > 1) { %>
+                        <a href="/media?page=1" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-white hover:text-accent transition">1</a>
+                        <% if (startPage > 2) { %>
+                            <span class="text-slate-400">...</span>
+                        <% } %>
+                    <% } %>
+
+                    <% for(let i = startPage; i <= endPage; i++) { %>
+                        <a href="/media?page=<%= i %>" class="w-10 h-10 flex items-center justify-center rounded-full <%= i === currentPaginationPage ? 'bg-accent text-white font-bold shadow-md' : 'border border-slate-200 text-slate-500 hover:bg-white hover:text-accent transition' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+
+                    <% if (endPage < totalPages) { %>
+                        <% if (endPage < totalPages - 1) { %>
+                            <span class="text-slate-400">...</span>
+                        <% } %>
+                        <a href="/media?page=<%= totalPages %>" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-white hover:text-accent transition"><%= totalPages %></a>
+                    <% } %>
+
+                    <!-- Next Button -->
+                    <% if (currentPaginationPage < totalPages) { %>
+                        <a href="/media?page=<%= currentPaginationPage + 1 %>" class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-white hover:text-accent transition"><i class="ph-bold ph-caret-right"></i></a>
+                    <% } else { %>
+                        <span class="w-10 h-10 flex items-center justify-center rounded-full border border-slate-100 text-slate-300 cursor-not-allowed"><i class="ph-bold ph-caret-right"></i></span>
+                    <% } %>
+                </nav>
+            </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- SECTION PODCAST -->
+    <section class="py-20 bg-primary text-white relative overflow-hidden">
+        <!-- Decoration BG -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-accent/10 skew-x-12 transform origin-top-right"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Info & Player -->
+                <div>
+                    <div class="flex items-center gap-2 text-accent font-bold uppercase tracking-wider text-sm mb-4">
+                        <i class="ph-fill ph-microphone-stage text-xl"></i>
+                        <span>Disponible en Audio</span>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-6 leading-tight">Le Podcast de l'Église</h2>
+                    <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+                        Emportez les prédications avec vous. Que ce soit dans la voiture, au sport ou à la maison, restez connectés à la parole.
+                    </p>
+
+                    <!-- Custom Mini Player -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 mb-8 shadow-lg">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 bg-slate-800 rounded-lg flex-shrink-0 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cover Podcast" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-lg">Épisode 42 : La Foi en Action</h3>
+                                <p class="text-slate-400 text-sm">Pasteur Marc Tremblay • 35 min</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar (Fake) -->
+                        <div class="w-full bg-white/20 h-1.5 rounded-full mb-2 cursor-pointer group">
+                            <div class="bg-accent h-1.5 rounded-full w-1/3 relative">
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition shadow-sm"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-400 mb-4">
+                            <span>12:45</span>
+                            <span>35:20</span>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="flex justify-center items-center gap-6">
+                            <button class="text-slate-400 hover:text-white transition"><i class="ph-fill ph-skip-back text-xl"></i></button>
+                            <button class="w-12 h-12 bg-white text-primary rounded-full flex items-center justify-center hover:scale-110 transition shadow-lg">
+                                <i class="ph-fill ph-play text-xl ml-1"></i>
+                            </button>
+                            <button class="text-slate-400 hover:text-white transition"><i class="ph-fill ph-skip-forward text-xl"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Links -->
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#" class="flex items-center gap-2 bg-[#1DB954] hover:bg-[#1ed760] text-white px-5 py-2.5 rounded-full font-bold transition text-sm shadow-sm hover:shadow-md">
+                            <i class="ph-fill ph-spotify-logo text-xl"></i> Spotify
+                        </a>
+                        <a href="#" class="flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 px-5 py-2.5 rounded-full font-bold transition text-sm shadow-sm hover:shadow-md">
+                            <i class="ph-fill ph-apple-logo text-xl"></i> Apple Podcasts
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Episodes List -->
+                <div class="bg-white rounded-2xl p-8 text-slate-800 shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6 text-primary border-b border-slate-100 pb-4">Derniers Épisodes</h3>
+                    <div class="space-y-4">
+                        <% if (recentSermons && recentSermons.length > 0) { %>
+                            <% recentSermons.forEach(function(sermon) { %>
+                            <div class="flex items-start gap-4 p-3 rounded-lg hover:bg-slate-50 transition group cursor-pointer">
+                                <div class="w-10 h-10 bg-accent/10 text-accent rounded-full flex items-center justify-center flex-shrink-0 mt-1 font-bold">
+                                    <i class="ph-fill ph-play-circle text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-primary group-hover:text-accent transition"><%= sermon.title %></h4>
+                                    <p class="text-sm text-slate-500 mb-1"><%= new Date(sermon.date_preached).toLocaleDateString('fr-CA') %> • <%= sermon.duration || 'N/A' %></p>
+                                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded"><%= sermon.series || 'Prédication' %></span>
+                                </div>
+                            </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-slate-500 text-center py-4">Aucun épisode récent trouvé.</p>
+                        <% } %>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <a href="#" class="text-accent font-semibold text-sm hover:underline">Voir toutes les archives audio</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+<!-- Modal de confirmation de suppression -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-200" id="deleteModalContent">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+                    <i class="ph-bold ph-trash text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Supprimer cet enregistrement ?</h3>
+                <p class="text-slate-500 mb-6">Cette action est définitive. Le sermon sera retiré de la médiathèque.</p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="closeDeleteModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition">Annuler</button>
+                    <button onclick="confirmDelete()" class="px-5 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 shadow-lg shadow-red-200 transition">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts pour la Modale -->
+    <script>
+        let deleteId = null;
+        const modal = document.getElementById('deleteModal');
+        const modalContent = document.getElementById('deleteModalContent');
+
+        function openDeleteModal(id) {
+            deleteId = id;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Petit délai pour l'animation
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeDeleteModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                deleteId = null;
+            }, 300);
+        }
+
+        function confirmDelete() {
+            if (deleteId) {
+                document.getElementById('delete-form-' + deleteId).submit();
+            }
+        }
+
+        // Fermer si on clique en dehors
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+
+  <%- include('partials/footer') %>

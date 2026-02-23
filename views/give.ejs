@@ -1,0 +1,81 @@
+<%- include('partials/header', { title: 'Faire un don' }) %>
+
+    <!-- HEADER PAGE -->
+    <header class="bg-primary pt-32 pb-20 text-center text-white relative">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Merci pour votre libéralité</h1>
+            <p class="text-xl text-slate-300">Votre générosité fait une différence réelle à Québec et ailleurs.</p>
+        </div>
+    </header>
+
+    <!-- OPTIONS DE DON -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center text-primary mb-12">Comment donner ?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Option 1: Virement Interac -->
+                <div class="bg-light p-8 rounded-xl text-center border border-slate-200 hover:border-accent hover:shadow-lg transition group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-accent text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Recommandé</div>
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-accent text-3xl shadow-sm group-hover:bg-accent group-hover:text-white transition">
+                        <i class="ph-fill ph-paper-plane-tilt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Virement Interac</h3>
+                    <p class="text-slate-600 mb-4">
+                        Simple, rapide et sans frais pour l'église.
+                    </p>
+                    <div class="text-sm bg-white p-4 rounded-lg border border-slate-100 mb-4">
+                        <p class="font-bold text-primary">don@egliseduberger.org</p>
+                        <p class="text-slate-500 mt-1">Question : Ville ?</p>
+                        <p class="text-slate-500">Réponse : Quebec (sans accent)</p>
+                    </div>
+                </div>
+
+                <!-- Option 2: Carte de Crédit -->
+                <div class="bg-light p-8 rounded-xl text-center border border-slate-200 hover:border-accent hover:shadow-lg transition group">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-accent text-3xl shadow-sm group-hover:bg-accent group-hover:text-white transition">
+                        <i class="ph-fill ph-credit-card"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">En Ligne (Crédit)</h3>
+                    <p class="text-slate-600 mb-6">
+                        Sécurisé via notre partenaire Stripe. Possibilité de mettre en place un don récurrent.
+                    </p>
+                    <button class="bg-primary text-white hover:bg-slate-800 transition px-6 py-2 rounded-full font-bold w-full">
+                        Donner maintenant
+                    </button>
+                    <div class="mt-4 flex justify-center gap-2 text-slate-400 text-2xl">
+                        <i class="ph-fill ph-visa-logo"></i>
+                        <i class="ph-fill ph-mastercard-logo"></i>
+                    </div>
+                </div>
+
+                <!-- Option 3: En Personne -->
+                <div class="bg-light p-8 rounded-xl text-center border border-slate-200 hover:border-accent hover:shadow-lg transition group">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-accent text-3xl shadow-sm group-hover:bg-accent group-hover:text-white transition">
+                        <i class="ph-fill ph-hand-coins"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">Le Dimanche</h3>
+                    <p class="text-slate-600 mb-4">
+                        Lors de nos rassemblements, vous pouvez utiliser les enveloppes de don (espèces ou chèque) ou le terminal de débit au kiosque d'accueil.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    
+    <!-- TRANSPARENCE & FISCALITÉ -->
+    <section class="py-16 bg-white border-t border-slate-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-primary mb-6">Transparence & Reçus Fiscaux</h2>
+            <div class="bg-blue-50 p-6 rounded-xl text-left flex gap-4 items-start">
+                <i class="ph-fill ph-info text-blue-600 text-2xl mt-1 flex-shrink-0"></i>
+                <div class="text-slate-700 leading-relaxed">
+                    <p class="mb-2"><strong>Un reçu officiel pour fins d'impôt</strong> sera émis en février pour tout don annuel cumulé supérieur à 20$. Assurez-vous d'indiquer vos coordonnées complètes lors de votre don.</p>
+                    <p>L'Eglise Evangelique Du Berger est un organisme de bienfaisance enregistré auprès de l'Agence du Revenu du Canada. Nous nous engageons à une gestion intègre et transparente des fonds qui nous sont confiés.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<%- include('partials/footer') %>

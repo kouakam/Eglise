@@ -1,0 +1,189 @@
+<%- include('partials/header') %>
+
+    <!-- HERO SECTION -->
+    <section class="hero-bg h-screen min-h-[600px] flex items-center justify-center text-center px-4 pt-20">
+        <div class="max-w-4xl mx-auto text-white">
+            <span class="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm text-sm font-semibold mb-6 border border-white/30 uppercase tracking-wider">
+                Bienvenue à Québec
+            </span>
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                Une famille pour tous,<br>au cœur de la ville.
+            </h1>
+            <p class="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Que vous soyez en recherche spirituelle, nouvel arrivant ou simplement curieux, vous avez une place parmi nous. Venez vivre une expérience authentique.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#infos" class="bg-accent hover:bg-accentHover text-white text-lg px-8 py-3 rounded-full font-semibold transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-calendar-check"></i> Nos horaires de culte
+                </a>
+                <a href="#welcome" class="bg-white hover:bg-slate-100 text-primary text-lg px-8 py-3 rounded-full font-semibold transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-door-open"></i> Nous découvrir
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- BIENVENUE & PASTEUR -->
+    <section id="welcome" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Image Pasteur/Couple -->
+                <div class="relative">
+                    <div class="absolute -top-4 -left-4 w-24 h-24 bg-accent/10 rounded-full z-0"></div>
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Pasteur et son épouse" class="relative z-10 rounded-2xl shadow-xl w-full object-cover h-[400px]">
+                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg z-20 border-l-4 border-accent max-w-xs hidden md:block">
+                        <p class="italic text-slate-600 text-sm">"Notre désir est de voir chaque vie transformée par l'amour de Dieu."</p>
+                    </div>
+                </div>
+                <!-- Texte -->
+                <div>
+                    <h2 class="text-3xl font-bold text-primary mb-6">Bienvenue à la maison</h2>
+                    <p class="text-lg text-slate-600 mb-6 leading-relaxed">
+                        Bonjour ! Je suis Marc, le pasteur de l'Eglise Evangelique Du Berger. Nous savons qu'entrer dans une église pour la première fois peut être intimidant. C'est pourquoi nous mettons tout en œuvre pour que vous vous sentiez accueilli simplement, tel que vous êtes.
+                    </p>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                        Notre communauté est un mélange vibrant de familles, d'étudiants de l'université et de professionnels. Nous croyons en un Évangile pertinent pour la vie quotidienne, ancré dans la réalité de notre belle ville de Québec.
+                    </p>
+                    <a href="#" class="text-accent font-semibold hover:text-accentHover inline-flex items-center gap-1 group">
+                        En savoir plus sur notre vision <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INFOS PRATIQUES (CRUCIAL QUÉBEC) -->
+    <section id="infos" class="py-16 bg-light border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-accent font-semibold uppercase tracking-wider text-sm">Nous rejoindre</span>
+                <h2 class="text-3xl font-bold text-primary mt-2">Infos Pratiques</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Carte Adresse -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-blue-100 text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="ph-fill ph-map-pin"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Adresse</h3>
+                    <p class="text-slate-600">
+                        2620 Rue Darveau<br>
+                        Québec (QC) G1P 3V5
+                    </p>
+                    <p class="text-sm text-slate-500 mt-2">Quartier Duberger</p>
+                </div>
+
+                <!-- Carte Horaires -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
+                    <div class="w-14 h-14 bg-amber-100 text-accent rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="ph-fill ph-clock"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Culte du Dimanche</h3>
+                    <p class="text-slate-600 font-semibold text-lg">10h00</p>
+                    <p class="text-slate-600 mt-2">Café & accueil dès 9h30</p>
+                    <span class="inline-block mt-3 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Garderie disponible</span>
+                </div>
+
+                <!-- Carte Transport -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-blue-100 text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="ph-fill ph-car"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Accès & Stationnement</h3>
+                    <p class="text-slate-600 text-sm mb-2">
+                        <i class="ph-bold ph-bus text-accent"></i> <strong>RTC:</strong> Métrobus 800 & 801 (Arrêt devant la porte)
+                    </p>
+                    <p class="text-slate-600 text-sm">
+                        <i class="ph-bold ph-parking text-accent"></i> Stationnement gratuit à l'arrière et dans les rues avoisinantes (déneigé l'hiver).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MINISTÈRES -->
+    <section id="ministeres" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-primary mb-10 text-center">Une place pour chacun</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <% if (typeof ministries !== 'undefined' && ministries.length > 0) { %>
+                    <% ministries.forEach(function(ministry) { %>
+                    <a href="/ministries#ministry-<%= ministry.id %>" class="group relative rounded-2xl overflow-hidden cursor-pointer h-80 block">
+                        <% if (ministry.image_url) { %>
+                        <img src="<%= ministry.image_url %>" alt="<%= ministry.name %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <% } else { %>
+                        <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                            <span class="text-slate-400 text-4xl"><i class="ph-fill ph-users"></i></span>
+                        </div>
+                        <% } %>
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex flex-col justify-end p-6">
+                            <div class="translate-y-4 group-hover:translate-y-0 transition duration-300">
+                                <h3 class="text-white text-2xl font-bold mb-1"><%= ministry.name %></h3>
+                                <p class="text-slate-300 text-sm opacity-0 group-hover:opacity-100 transition duration-300"><%= ministry.short_description %></p>
+                            </div>
+                        </div>
+                    </a>
+                    <% }); %>
+                <% } else { %>
+                    <p class="col-span-3 text-center text-slate-500">Les ministères seront bientôt affichés ici.</p>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- ÉVÉNEMENTS (Component Style) -->
+    <section id="events" class="py-20 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10">
+                <div>
+                    <span class="text-accent font-semibold uppercase tracking-wider text-sm">Agenda</span>
+                    <h2 class="text-3xl font-bold mt-2">À venir à l'église</h2>
+                </div>
+                <a href="/events" class="hidden md:inline-flex items-center gap-2 text-white/80 hover:text-accent transition mt-4 md:mt-0">
+                    Voir tout le calendrier <i class="ph-bold ph-calendar"></i>
+                </a>
+            </div>
+
+            <div class="space-y-4">
+                <% if (typeof events !== 'undefined' && events.length > 0) { %>
+                    <% events.forEach(function(event) { 
+                        const eventDate = new Date(event.date_event);
+                        const monthNames = ["JAN", "FEV", "MAR", "AVR", "MAI", "JUIN", "JUIL", "AOUT", "SEPT", "OCT", "NOV", "DEC"];
+                        const dayNames = ["DIM", "LUN", "MAR", "MER", "JEU", "VEN", "SAM"];
+                    %>
+                    <div class="flex flex-col md:flex-row bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition items-center gap-6">
+                        <div class="flex-shrink-0 text-center bg-white/10 rounded-lg p-3 min-w-[80px]">
+                            <span class="block text-accent font-bold text-xl"><%= dayNames[eventDate.getDay()] %></span>
+                            <span class="block text-white text-2xl font-bold"><%= eventDate.getDate() %></span>
+                            <span class="block text-white/60 text-sm"><%= monthNames[eventDate.getMonth()] %></span>
+                        </div>
+                        <div class="flex-grow text-center md:text-left">
+                            <h3 class="text-xl font-bold text-white"><%= event.title %></h3>
+                            <p class="text-slate-300 mt-1"><%= event.description %></p>
+                            <div class="flex items-center justify-center md:justify-start gap-4 mt-2 text-sm text-slate-400">
+                                <span class="flex items-center gap-1"><i class="ph-fill ph-clock"></i> <%= eventDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}) %></span>
+                                <span class="flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> <%= event.location %></span>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <a href="/events/<%= event.id %>" class="inline-block border border-white/30 hover:bg-white hover:text-primary text-white font-medium px-6 py-2 rounded-full transition text-sm">Détails</a>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="text-center text-slate-400">Aucun événement à afficher pour le moment.</p>
+                <% } %>
+            </div>
+            
+            <div class="text-center mt-8 md:hidden">
+                <a href="/events" class="inline-flex items-center gap-2 text-accent font-medium">
+                    Voir tout le calendrier <i class="ph-bold ph-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>

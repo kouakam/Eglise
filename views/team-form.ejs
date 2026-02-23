@@ -1,0 +1,186 @@
+<%- include('partials/header', { title: member.id ? 'Modifier le membre' : 'Nouveau membre' }) %>
+
+<main class="bg-gray-50 min-h-screen py-12 md:py-20 flex items-center justify-center px-4">
+    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Sidebar / Context info (Desktop only) -->
+        <div class="hidden md:flex md:w-1/3 bg-slate-900 text-white p-10 relative flex-col justify-between">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            
+            <div class="relative z-10">
+                <h3 class="text-2xl font-bold mb-6 text-blue-400 border-b border-white/10 pb-4">Administration</h3>
+                <p class="text-slate-300 leading-relaxed mb-8 font-light text-sm">
+                    Gérez l'équipe pastorale et les leaders. Présentez ceux qui servent la communauté.
+                </p>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-blue-400">
+                            <i class="ph-fill ph-user text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm">Identité</h4>
+                            <p class="text-xs text-slate-400 mt-1">Nom complet et rôle précis.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-green-400">
+                            <i class="ph-fill ph-smiley text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm">Portrait</h4>
+                            <p class="text-xs text-slate-400 mt-1">Une photo accueillante et professionnelle.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-yellow-400">
+                            <i class="ph-fill ph-text-aa text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm">Bio Courte</h4>
+                            <p class="text-xs text-slate-400 mt-1">Quelques mots sur leur parcours/cœur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative z-10 mt-12 pt-6 border-t border-white/10 hover:text-white group">
+                <a href="/about" class="inline-flex items-center gap-2 text-slate-400 group-hover:text-blue-300 transition text-sm font-medium">
+                    <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-transform"></i> Retour à l'équipe
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="w-full md:w-2/3 p-8 md:p-12 overflow-y-auto max-h-[90vh]">
+            <div class="mb-10 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        <%= member.id ? 'Modifier le membre' : 'Nouveau membre' %>
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Mettez à jour les informations du profil.</p>
+                </div>
+                <!-- Status Badge -->
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider <%= member.id ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' %>">
+                    <%= member.id ? 'Édition' : 'Création' %>
+                </span>
+            </div>
+            
+            <form action="<%= member.id ? '/team/update/' + member.id : '/team/create' %>" method="POST" class="space-y-8">
+                
+                <!-- Section 1: Identité -->
+                <div class="space-y-5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-identification-card text-blue-500"></i> Identité & Rôle
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Nom -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nom Complet</label>
+                            <div class="relative group">
+                                <input type="text" name="name" value="<%= member.name || '' %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="Ex: Jean Dupont" required>
+                                <i class="ph-bold ph-user absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                        </div>
+
+                         <!-- Role -->
+                         <div class="md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Rôle / Titre</label>
+                            <div class="relative group">
+                                <input type="text" name="role" value="<%= member.role || '' %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="Ex: Pasteur Principal" required>
+                                <i class="ph-bold ph-briefcase absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                        </div>
+
+                        <!-- Display Order -->
+                        <div class="md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Ordre d'affichage</label>
+                            <div class="relative group">
+                                <input type="number" name="display_order" value="<%= member.display_order || 0 %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="0">
+                                <i class="ph-bold ph-sort-ascending absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Bio -->
+                <div class="space-y-5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-quotes text-blue-500"></i> Biographie
+                    </h4>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Courte Bio</label>
+                        <div class="relative group">
+                            <textarea name="bio" rows="4" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-600 resize-none" placeholder="Une courte description de la personne..."><%= member.bio || '' %></textarea>
+                            <i class="ph-bold ph-pencil-simple absolute left-3.5 top-5 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Section 3: Photo -->
+                 <div class="space-y-5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-image text-blue-500"></i> Photo de profil
+                    </h4>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">URL de la photo</label>
+                        <div class="relative group">
+                            <input type="url" name="image_url" id="image_url" value="<%= member.image_url || '' %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700 text-sm" placeholder="https://...">
+                            <i class="ph-bold ph-link absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2">Format portrait carré recommandé.</p>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="image-preview-container" class="mt-4 rounded-full overflow-hidden bg-slate-100 border-2 border-dashed border-slate-200 w-32 h-32 mx-auto md:mx-0 flex items-center justify-center relative group shadow-lg">
+                        <img id="image-preview" src="<%= member.image_url || '' %>" class="<%= member.image_url ? '' : 'hidden' %> w-full h-full object-cover">
+                        <div id="image-placeholder" class="<%= member.image_url ? 'hidden' : 'flex' %> flex-col items-center justify-center text-slate-400">
+                            <i class="ph-duotone ph-user text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="pt-6 flex items-center justify-end gap-4 border-t border-slate-100 mt-8">
+                    <a href="/about" class="px-6 py-3 rounded-xl text-slate-500 font-bold hover:bg-slate-100 transition">Annuler</a>
+                    <button type="submit" class="px-8 py-3 bg-primary hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transform hover:-translate-y-1 transition-all flex items-center gap-2">
+                        <i class="ph-bold ph-check"></i>
+                        <%= member.id ? 'Mettre à jour' : 'Enregistrer le membre' %>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Simple script to handle live image preview
+    const imageUrlInput = document.getElementById('image_url');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePlaceholder = document.getElementById('image-placeholder');
+
+    imageUrlInput.addEventListener('input', function() {
+        const url = this.value;
+        if (url) {
+            imagePreview.src = url;
+            imagePreview.classList.remove('hidden');
+            imagePlaceholder.classList.add('hidden');
+            
+            // Handle error
+            imagePreview.onerror = function() {
+                this.classList.add('hidden');
+                imagePlaceholder.classList.remove('hidden');
+            }
+        } else {
+            imagePreview.classList.add('hidden');
+            imagePlaceholder.classList.remove('hidden');
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

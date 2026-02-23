@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Eglise Evangelique Du Berger - Une famille pour tous à Québec' %></title>
+    <meta name="description" content="Église évangélique à Québec. Une communauté accueillante, moderne et bienveillante pour les familles, étudiants et professionnels.">
+    <link rel="icon" type="image/avif" href="/images/logo.avif">
+    
+    <!-- Tailwind CSS (Via CDN pour le prototypage rapide) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuration de la palette personnalisée -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0033A0', // Alliance Blue
+                        accent: '#C8102E',  // Alliance Red
+                        accentHover: '#9B0C23', // Darker Red for hover
+                        light: '#F3F4F6',   // Light gray
+                        surface: '#FFFFFF', // White
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons: Phosphor Icons (Légers et modernes) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-bg {
+            /* Image de fond : Vue de Québec ou rassemblement chaleureux */
+            background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.6)), url('/images/mouton.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="text-slate-700 antialiased scroll-smooth">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-sm fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <a href="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                    <img src="/images/logo.avif" alt="Logo Église Évangélique Du Berger" class="h-12 w-auto object-contain">
+                    <span class="font-bold text-xl text-primary tracking-tight">EGLISE EVANGELIQUE <span class="text-accent">DU BERGER</span></span>
+                </a>
+
+                <!-- Menu Desktop -->
+                <div class="hidden lg:flex space-x-6 items-center">
+                    <a href="/" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'text-accent font-bold' : '' %>">Accueil</a>
+                    <a href="/about" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'about' ? 'text-accent font-bold' : '' %>">À propos</a>
+                    <a href="/ministries" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'ministries' ? 'text-accent font-bold' : '' %>">Ministères</a>
+                    <a href="/media" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'media' ? 'text-accent font-bold' : '' %>">Prédications</a>
+                    <a href="/events" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'events' ? 'text-accent font-bold' : '' %>">Événements</a>
+                    <a href="/contact" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'contact' ? 'text-accent font-bold' : '' %>">Contact</a>
+                    
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <div class="relative group ml-2">
+                            <button class="flex items-center gap-2 text-slate-700 font-semibold hover:text-accent transition">
+                                <i class="ph-fill ph-user-circle text-2xl"></i>
+                                <span class="text-sm"><%= user.username %></span>
+                                <i class="ph-bold ph-caret-down text-xs"></i>
+                            </button>
+                            <!-- Dropdown -->
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
+                                <div class="py-2">
+                                    <span class="block px-4 py-2 text-xs text-slate-400 font-semibold uppercase tracking-wider">Compte</span>
+                                    <% if (user.role === 'admin') { %>
+                                        <a href="/admin/messages" class="block px-4 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 flex items-center gap-2 border-b border-slate-50">
+                                            <i class="ph ph-envelope-simple"></i> Messages
+                                        </a>
+                                    <% } %>
+                                    <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-slate-50 flex items-center gap-2">
+                                        <i class="ph ph-sign-out"></i> Déconnexion
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <a href="/login" class="text-slate-600 hover:text-accent font-medium text-sm xl:text-base transition <%= typeof currentPage !== 'undefined' && currentPage === 'login' ? 'text-accent font-bold' : '' %> flex items-center gap-1">
+                            <i class="ph ph-sign-in"></i> Connexion
+                        </a>
+                    <% } %>
+
+                    <a href="/give" class="bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-full font-semibold transition shadow-md flex items-center gap-2 text-sm xl:text-base">
+                        <i class="ph ph-heart"></i> Don
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="flex items-center lg:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-primary focus:outline-none p-2 rounded-lg hover:bg-slate-50 transition">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel (Hidden by default) -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-100 absolute w-full z-40 shadow-xl rounded-b-lg">
+            <div class="px-4 py-4 space-y-2">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-house text-xl text-primary"></i> Accueil
+                </a>
+                <a href="/about" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-users-three text-xl text-primary"></i> À propos
+                </a>
+                <a href="/ministries" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-hand-heart text-xl text-primary"></i> Ministères
+                </a>
+                <a href="/media" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-video text-xl text-primary"></i> Prédications
+                </a>
+                <a href="/events" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-calendar text-xl text-primary"></i> Événements
+                </a>
+                <a href="/contact" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                    <i class="ph ph-envelope text-xl text-primary"></i> Contact
+                </a>
+
+                <div class="h-px bg-slate-100 my-2"></div>
+                
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <div class="px-4 py-2">
+                         <span class="text-xs uppercase font-bold text-slate-400 block mb-2">Connecté en tant que <%= user.username %></span>
+                         <% if (user.role === 'admin') { %>
+                            <a href="/admin/messages" class="flex items-center gap-3 py-2 text-primary font-semibold hover:bg-slate-50 rounded-lg mb-2">
+                                <i class="ph ph-envelope-simple text-xl"></i> Messages Admin
+                            </a>
+                         <% } %>
+                         <a href="/logout" class="flex items-center gap-3 py-2 text-red-600 font-semibold hover:bg-slate-50 rounded-lg">
+                            <i class="ph ph-sign-out text-xl"></i> Déconnexion
+                         </a>
+                    </div>
+                <% } else { %>
+                    <a href="/login" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700 hover:bg-slate-50 transition font-medium">
+                        <i class="ph ph-sign-in text-xl text-primary"></i> Connexion
+                    </a>
+                <% } %>
+                
+                <a href="/give" class="flex items-center justify-center gap-2 w-full bg-accent hover:bg-accentHover text-white px-4 py-3 rounded-lg font-bold transition shadow-md mt-4">
+                    <i class="ph-fill ph-heart"></i> Faire un don
+                </a>
+            </div>
+        </div>
+    </nav>

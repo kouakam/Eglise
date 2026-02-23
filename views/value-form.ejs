@@ -1,0 +1,146 @@
+<%- include('partials/header', { title: valueItem.id ? 'Modifier la valeur' : 'Nouvelle valeur' }) %>
+
+<main class="bg-gray-50 min-h-screen py-12 md:py-20 flex items-center justify-center px-4">
+    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Sidebar / Context info (Desktop only) -->
+        <div class="hidden md:flex md:w-1/3 bg-slate-900 text-white p-10 relative flex-col justify-between">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            
+            <div class="relative z-10">
+                <h3 class="text-2xl font-bold mb-6 text-blue-400 border-b border-white/10 pb-4">Administration</h3>
+                <p class="text-slate-300 leading-relaxed mb-8 font-light text-sm">
+                    Gérez la section "Ce qui nous anime". Définissez les valeurs fondamentales de l'église.
+                </p>
+                
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-blue-400">
+                            <i class="ph-fill ph-check-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm">Titre Fort</h4>
+                            <p class="text-xs text-slate-400 mt-1">L'essentiel en quelques mots.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-green-400">
+                            <i class="ph-fill ph-star text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm">Icône Représentative</h4>
+                            <p class="text-xs text-slate-400 mt-1">Une image visuelle (Phosphor Icons).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative z-10 mt-12 pt-6 border-t border-white/10 hover:text-white group">
+                <a href="/about" class="inline-flex items-center gap-2 text-slate-400 group-hover:text-blue-300 transition text-sm font-medium">
+                    <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-transform"></i> Retour à "À Propos"
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="w-full md:w-2/3 p-8 md:p-12 overflow-y-auto max-h-[90vh]">
+            <div class="mb-10 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">
+                        <%= valueItem.id ? 'Modifier la valeur' : 'Nouvelle valeur' %>
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Mettez à jour les informations ci-dessous.</p>
+                </div>
+                <!-- Status Badge -->
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider <%= valueItem.id ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' %>">
+                    <%= valueItem.id ? 'Édition' : 'Création' %>
+                </span>
+            </div>
+            
+            <form action="<%= valueItem.id ? '/values/update/' + valueItem.id : '/values/create' %>" method="POST" class="space-y-8">
+                
+                <!-- Section 1: Contenu -->
+                <div class="space-y-5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-text-aa text-blue-500"></i> Contenu
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Titre -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Titre de la valeur</label>
+                            <div class="relative group">
+                                <input type="text" name="title" value="<%= valueItem.title || '' %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="Ex: L'Accueil Inconditionnel" required>
+                                <i class="ph-bold ph-text-t absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                        </div>
+
+                         <!-- Icone -->
+                         <div class="md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Icône (Phosphor)</label>
+                            <div class="relative group">
+                                <input type="text" name="icon" id="icon-input" value="<%= valueItem.icon || 'ph-heart' %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="Ex: ph-heart">
+                                <i class="ph-bold ph-star absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Voir <a href="https://phosphoricons.com/" target="_blank" class="text-blue-500 underline">phosphoricons.com</a></p>
+                        </div>
+
+                        <!-- Display Order -->
+                        <div class="md:col-span-1">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Ordre d'affichage</label>
+                            <div class="relative group">
+                                <input type="number" name="display_order" value="<%= valueItem.display_order || 0 %>" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-medium text-slate-700" placeholder="0">
+                                <i class="ph-bold ph-sort-ascending absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                        <div class="relative group">
+                            <textarea name="description" rows="4" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-600 resize-none" placeholder="Expliquez ce que cela signifie pour l'église..."><%= valueItem.description || '' %></textarea>
+                            <i class="ph-bold ph-pencil-simple absolute left-3.5 top-5 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Icon Section -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 flex items-center gap-4">
+                    <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center text-accent text-3xl">
+                        <i id="icon-preview" class="ph-fill <%= valueItem.icon || 'ph-heart' %>"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-slate-800">Aperçu de l'icône</h5>
+                        <p class="text-sm text-slate-500">L'icône qui sera affichée sur la carte.</p>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="pt-6 flex items-center justify-end gap-4 border-t border-slate-100 mt-8">
+                    <a href="/about" class="px-6 py-3 rounded-xl text-slate-500 font-bold hover:bg-slate-100 transition">Annuler</a>
+                    <button type="submit" class="px-8 py-3 bg-primary hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transform hover:-translate-y-1 transition-all flex items-center gap-2">
+                        <i class="ph-bold ph-check"></i>
+                        <%= valueItem.id ? 'Mettre à jour' : 'Enregistrer' %>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Script pour prévisualiser l'icône
+    const iconInput = document.getElementById('icon-input');
+    const iconPreview = document.getElementById('icon-preview');
+
+    iconInput.addEventListener('input', function() {
+        const iconClass = this.value || 'ph-heart';
+        // Nettoie toutes les classes existantes sauf ph-fill (optionnel, selon ta convention)
+        iconPreview.className = 'ph-fill ' + iconClass;
+    });
+</script>
+
+<%- include('partials/footer') %>
